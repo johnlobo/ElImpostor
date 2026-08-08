@@ -8,20 +8,28 @@ import { triggerHaptic } from '../lib/haptics';
 interface VotingPhaseProps {
   gameState: GameState;
   onConfirmElimination: (eliminatedPlayerId: string, votesRecord?: Record<string, string>) => void;
+  // Persists secret-ballot progress into gameState (and from there,
+  // localStorage) so a reload mid-vote resumes instead of letting an
+  // earlier voter vote again.
+  onVoteCast: (voterIndex: number, votesMap: Record<string, string>) => void;
 }
 
-export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmElimination }) => {
+export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmElimination, onVoteCast }) => {
   // Verbal voting state
   const [selectedVerbalTargetId, setSelectedVerbalTargetId] = useState<string | null>(null);
 
-  // Secret voting state (pass-the-phone)
-  const [voterIndex, setVoterIndex] = useState(0);
-  const [votesMap, setVotesMap] = useState<Record<string, string>>({}); // voterId -> targetId
-  const [currentSelectedTargetId, setCurrentSelectedTargetId] = useState<string | null>(null);
-  const [showTallyResult, setShowTallyResult] = useState(false);
-
   const alivePlayers = gameState.players.filter(p => p.isAlive);
   const totalVoters = alivePlayers.length;
+
+  // Secret voting state (pass-the-phone), resumed from gameState if a
+  // reload happened mid-vote instead of always starting fresh.
+  const [voterIndex, setVoterIndex] = useState(() => gameState.secretVoterIndex ?? 0);
+  const [votesMap, setVotesMap] = useState<Record<string, string>>(() => gameState.votes ?? {}); // voterId -> targetId
+  const [currentSelectedTargetId, setCurrentSelectedTargetId] = useState<string | null>(null);
+  const [showTallyResult, setShowTallyResult] = useState(
+    () => totalVoters > 0 && (gameState.secretVoterIndex ?? 0) >= totalVoters
+  );
+
   const currentVoter: Player = alivePlayers[voterIndex];
 
   // Record secret vote and move to next voter or tally
@@ -35,12 +43,14 @@ export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmEl
     setVotesMap(updatedMap);
     setCurrentSelectedTargetId(null);
 
-    if (voterIndex + 1 < totalVoters) {
-      setVoterIndex(prev => prev + 1);
+    const nextIndex = voterIndex + 1;
+    if (nextIndex < totalVoters) {
+      setVoterIndex(nextIndex);
     } else {
       // All votes in! Show tally
       setShowTallyResult(true);
     }
+    onVoteCast(nextIndex, updatedMap);
   };
 
   // Calculate vote tallies for secret mode
@@ -283,6 +293,7 @@ export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmEl
                   setVotesMap({});
                   setCurrentSelectedTargetId(null);
                   setShowTallyResult(false);
+                  onVoteCast(0, {});
                 }}
                 className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-2xl shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
               >

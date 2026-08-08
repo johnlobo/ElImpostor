@@ -91,6 +91,7 @@ export interface GameState {
   impostorIds: string[];
   currentTurnIndex: number;
   votes: Record<string, string>; // voterPlayerId -> targetPlayerId
+  secretVoterIndex?: number; // progress through the secret pass-the-phone ballot
   eliminatedPlayerId?: string;
   roundNotice?: string;
   impostorGuessedWord?: string;

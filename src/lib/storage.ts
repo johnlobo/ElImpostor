@@ -112,10 +112,12 @@ export function saveGameConfig(config: GameConfig): void {
   setItem(KEYS.CONFIG, config);
 }
 
-// The active game round-trips through localStorage in plain JSON by default,
-// which means anyone can open devtools' Application tab mid-round and read
-// the secret word / impostor identities before they're revealed in-app.
-// Sealing keeps those fields out of the stored JSON as readable text.
+// NOT encryption -- base64 is trivially reversible, and true encryption
+// isn't possible here anyway (the same device has to decrypt and render
+// "you are the impostor" to the player, so any key would live in this same
+// client code). This only raises the bar above "glance at the Application
+// tab and read the secret word as formatted JSON" -- it stops the casual
+// spoiler, not a determined one.
 type SealedFields = Pick<GameState, 'secretWord' | 'impostorIds' | 'fakeWord'>;
 type SealedActiveGame = Omit<GameState, keyof SealedFields> & { _sealed: string };
 

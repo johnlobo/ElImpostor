@@ -193,6 +193,7 @@ export default function App() {
       impostorIds,
       currentTurnIndex: 0,
       votes: {},
+      secretVoterIndex: 0,
       roundNumber: roundNum,
       matchHistory
     };
@@ -226,6 +227,7 @@ export default function App() {
           players: updatedPlayers,
           eliminatedPlayerId: undefined,
           votes: {},
+          secretVoterIndex: 0,
           roundNotice: es.impostorCaughtMoreRemain,
           phase: 'CLUES'
         });
@@ -447,6 +449,9 @@ export default function App() {
           <VotingPhase
             gameState={gameState}
             onConfirmElimination={handleConfirmElimination}
+            onVoteCast={(voterIndex, votesMap) => {
+              setGameState({ ...gameState, secretVoterIndex: voterIndex, votes: votesMap });
+            }}
           />
         )}
 
