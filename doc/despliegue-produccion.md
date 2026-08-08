@@ -1,18 +1,17 @@
-# Despliegue en producción (mismo esquema que LinkSafe / B2-english-prep-suite)
+# Despliegue en producción
 
 La app se despliega como imagen Docker publicada en GHCR, detrás de Nginx Proxy Manager, en el
-mismo VPS que `LinkSafe` y `B2-english-prep-suite`. El repo incluye `Dockerfile`, `nginx.conf`,
-`docker-compose.yml` y `.github/workflows/release.yml`.
+mismo VPS que otros proyectos ya desplegados con este mismo esquema. El repo incluye `Dockerfile`,
+`nginx.conf`, `docker-compose.yml` y `.github/workflows/release.yml`.
 
-Diferencia clave respecto a esos dos proyectos: **ElImpostor no tiene backend**. Es una SPA de Vite
+Diferencia clave respecto a esos otros proyectos: **ElImpostor no tiene backend**. Es una SPA de Vite
 100% cliente (sin Express, sin Firebase, sin variables de entorno) — el juego vive entero en
 `localStorage` del navegador. Por eso la imagen final no es un servidor Node, es **nginx** sirviendo
 los archivos estáticos del build (`nginx:1.27-alpine`, puerto **80** interno, no 3000).
 
 ## 1. Clave SSH de despliegue
 
-Mismo patrón que `gh_deploy_b2`: una clave dedicada por repo, autorizada en el propio VPS. Generada
-en el servidor:
+Una clave dedicada por repo, autorizada en el propio VPS. Generada en el servidor:
 
 ```bash
 cd ~/.ssh
@@ -35,10 +34,10 @@ gh secret set DEPLOY_PATH --repo johnlobo/ElImpostor -b "<ruta de docker-compose
 gh secret set SSH_PRIVATE_KEY --repo johnlobo/ElImpostor < ~/.ssh/gh_deploy_elimpostor
 ```
 
-`SSH_HOST`/`SSH_USER`/`SSH_PORT` son el mismo VPS que `LinkSafe`/`B2` — mismos valores. `DEPLOY_PATH`
-es nuevo respecto a esos dos repos: ahí el workflow tenía la ruta del servidor escrita a mano, pero
-eso deja usuario y estructura de carpetas del VPS visibles en un workflow público. Aquí sale por
-secret en vez de quedar hardcodeada en `release.yml`.
+`SSH_HOST`/`SSH_USER`/`SSH_PORT` son el mismo VPS que otros proyectos ya desplegados aquí — mismos
+valores. `DEPLOY_PATH` en cambio sí es propio de este repo: la ruta del servidor no queda escrita a
+mano en el workflow (eso dejaría usuario y estructura de carpetas del VPS visibles en un archivo
+público), sale por secret.
 
 `gh secret set` no acepta el valor como argumento posicional (`gh secret set NOMBRE valor` falla con
 "accepts at most 1 arg(s)") — hay que pasarlo con `-b "valor"` o por stdin (`echo valor | gh secret set NOMBRE`,
@@ -70,8 +69,8 @@ networks:
     external: true
 ```
 
-Usa la red externa `proxy-network` (la misma que Nginx Proxy Manager, `linksafe` y
-`b2-english-prep-suite`) — debe existir ya en el host.
+Usa la red externa `proxy-network` (la misma que Nginx Proxy Manager y los demás contenedores de
+este VPS) — debe existir ya en el host.
 
 ## 4. Nginx Proxy Manager
 
@@ -102,7 +101,7 @@ de la imagen → push a `ghcr.io/johnlobo/elimpostor` → despliegue por SSH
 Verifica en Repo → Actions que el workflow termina en verde, y en Repo → Packages que aparece la
 imagen publicada.
 
-## 6. Por qué nginx y no Node (a diferencia de LinkSafe/B2)
+## 6. Por qué nginx y no Node
 
 Al revisar el código de ElImpostor se detectaron dependencias muertas heredadas de un scaffold de
 AI Studio (`@google/genai`, `express`, `dotenv`, `tsx`) sin un solo uso real en `src/` — la app
