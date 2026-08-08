@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Users, Save, Download, Sparkles, Check } from 'lucide-react';
+import { Plus, Trash2, Users, Save, Download, Sparkles, Check, ArrowLeft } from 'lucide-react';
 import { Player, PlayerGroup } from '../types';
 import { es } from '../i18n/es';
 import { AVATARS, COLOR_OPTIONS } from '../data/playerOptions';
@@ -13,6 +13,7 @@ interface PlayerManagerProps {
   onLoadGroup: (group: PlayerGroup) => void;
   onDeleteGroup: (groupId: string) => void;
   vibrationEnabled: boolean;
+  onBackToHome?: () => void;
 }
 
 export const PlayerManager: React.FC<PlayerManagerProps> = ({
@@ -22,7 +23,8 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
   onSaveGroup,
   onLoadGroup,
   onDeleteGroup,
-  vibrationEnabled
+  vibrationEnabled,
+  onBackToHome
 }) => {
   const [newName, setNewName] = useState('');
   const [nameError, setNameError] = useState(false);
@@ -276,6 +278,16 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {onBackToHome && (
+        <button
+          onClick={onBackToHome}
+          className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl transition-all border border-slate-700 flex items-center justify-center gap-2 text-xs"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Volver al Menú Principal</span>
+        </button>
       )}
     </div>
   );

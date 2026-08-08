@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Eye, Clock, Vote, Volume2, HelpCircle, Vibrate } from 'lucide-react';
+import { Shield, Eye, Clock, Vote, Volume2, HelpCircle, Vibrate, ArrowLeft } from 'lucide-react';
 import { GameConfig, ImpostorKnowledge, ClueOrder, VotingMode, EliminationMode } from '../types';
 import { es } from '../i18n/es';
 import { triggerHaptic } from '../lib/haptics';
@@ -8,12 +8,14 @@ interface RulesSettingsProps {
   config: GameConfig;
   onUpdateConfig: (config: GameConfig) => void;
   playerCount: number;
+  onBackToHome?: () => void;
 }
 
 export const RulesSettings: React.FC<RulesSettingsProps> = ({
   config,
   onUpdateConfig,
-  playerCount
+  playerCount,
+  onBackToHome
 }) => {
   const handleToggleBool = (key: keyof GameConfig) => {
     triggerHaptic(20, config.vibrationEnabled);
@@ -24,6 +26,12 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
     triggerHaptic(20, config.vibrationEnabled);
     onUpdateConfig({ ...config, [key]: val });
   };
+
+  // 'single' (accuse everyone at once) only means something with 2+
+  // impostors -- with 1 there's nothing to distinguish it from successive.
+  const effectiveImpostorCount =
+    config.impostorCount === -1 ? (playerCount >= 8 ? 2 : 1) : config.impostorCount;
+  const eliminationModeDisabled = effectiveImpostorCount < 2;
 
   return (
     <div className="space-y-6">
@@ -71,30 +79,42 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
           {[
             { id: 'successive' as EliminationMode, title: es.eliminationSuccessive, desc: es.eliminationSuccessiveDesc },
             { id: 'single' as EliminationMode, title: es.eliminationSingle, desc: es.eliminationSingleDesc }
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                triggerHaptic(20, config.vibrationEnabled);
-                onUpdateConfig({
-                  ...config,
-                  eliminationMode: item.id,
-                  // A secret ballot has no natural way to tally "pick N per
-                  // voter", so single-accusation mode always runs verbal.
-                  votingMode: item.id === 'single' ? 'verbal' : config.votingMode
-                });
-              }}
-              className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
-                config.eliminationMode === item.id
-                  ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                  : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="font-bold text-xs text-amber-300">{item.title}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">{item.desc}</div>
-            </button>
-          ))}
+          ].map((item) => {
+            const isSelected = eliminationModeDisabled ? item.id === 'successive' : config.eliminationMode === item.id;
+            return (
+              <button
+                key={item.id}
+                disabled={eliminationModeDisabled}
+                onClick={() => {
+                  if (eliminationModeDisabled) return;
+                  triggerHaptic(20, config.vibrationEnabled);
+                  onUpdateConfig({
+                    ...config,
+                    eliminationMode: item.id,
+                    // A secret ballot has no natural way to tally "pick N per
+                    // voter", so single-accusation mode always runs verbal.
+                    votingMode: item.id === 'single' ? 'verbal' : config.votingMode
+                  });
+                }}
+                className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
+                  eliminationModeDisabled
+                    ? isSelected
+                      ? 'bg-slate-900 border-slate-700 text-slate-400 cursor-not-allowed'
+                      : 'bg-slate-950/50 border-slate-800/50 text-slate-600 cursor-not-allowed'
+                    : isSelected
+                      ? 'bg-amber-500/10 border-amber-500/80 text-white'
+                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                }`}
+              >
+                <div className={`font-bold text-xs ${eliminationModeDisabled ? 'text-slate-500' : 'text-amber-300'}`}>{item.title}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">{item.desc}</div>
+              </button>
+            );
+          })}
         </div>
+        {eliminationModeDisabled && (
+          <p className="text-[11px] text-slate-400">{es.eliminationModeDisabledSingle}</p>
+        )}
       </div>
 
       {/* Impostor Knowledge */}
@@ -187,7 +207,7 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
             { id: 'secret' as VotingMode, title: 'Secreta 📱', desc: 'Pasando el móvil' },
             { id: 'verbal' as VotingMode, title: 'Verbal 🗣️', desc: 'En voz alta' }
           ].map((item) => {
-            const disabled = item.id === 'secret' && config.eliminationMode === 'single';
+            const disabled = item.id === 'secret' && config.eliminationMode === 'single' && !eliminationModeDisabled;
             return (
               <button
                 key={item.id}
@@ -207,7 +227,7 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
             );
           })}
         </div>
-        {config.eliminationMode === 'single' && (
+        {config.eliminationMode === 'single' && !eliminationModeDisabled && (
           <p className="text-[11px] text-amber-300/80">{es.votingSecretDisabledForSingle}</p>
         )}
       </div>
@@ -277,6 +297,16 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
           </button>
         </div>
       </div>
+
+      {onBackToHome && (
+        <button
+          onClick={onBackToHome}
+          className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl transition-all border border-slate-700 flex items-center justify-center gap-2 text-xs"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Volver al Menú Principal</span>
+        </button>
+      )}
     </div>
   );
 };

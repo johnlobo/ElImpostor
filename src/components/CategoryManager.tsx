@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Plus, Trash2, Edit3, Check, Sparkles, FolderPlus, ChevronRight } from 'lucide-react';
+import { Layers, Plus, Trash2, Edit3, Check, Sparkles, FolderPlus, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Category, WordItem } from '../types';
 import { es } from '../i18n/es';
 import { triggerHaptic } from '../lib/haptics';
@@ -11,6 +11,7 @@ interface CategoryManagerProps {
   onSaveCustomCategory: (category: Category) => void;
   onDeleteCustomCategory: (id: string) => void;
   vibrationEnabled: boolean;
+  onBackToHome?: () => void;
 }
 
 export const CategoryManager: React.FC<CategoryManagerProps> = ({
@@ -19,7 +20,8 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
   onSelectCategory,
   onSaveCustomCategory,
   onDeleteCustomCategory,
-  vibrationEnabled
+  vibrationEnabled,
+  onBackToHome
 }) => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [viewingCategory, setViewingCategory] = useState<Category | null>(null);
@@ -360,6 +362,16 @@ export const CategoryManager: React.FC<CategoryManagerProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {onBackToHome && (
+        <button
+          onClick={onBackToHome}
+          className="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-2xl transition-all border border-slate-700 flex items-center justify-center gap-2 text-xs"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Volver al Menú Principal</span>
+        </button>
       )}
     </div>
   );

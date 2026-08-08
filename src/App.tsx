@@ -44,6 +44,12 @@ import { audioManager } from './lib/audio';
 import { shuffle } from './lib/random';
 import { es } from './i18n/es';
 
+// Phases that represent an actual in-progress match. HOME/SETUP/RULES/
+// CATEGORIES/SCOREBOARD/GROUPS are navigation screens you can visit while a
+// game is paused in the background -- they must never overwrite the resume
+// point, or leaving to Home would make "Reanudar Partida" resume to Home.
+const IN_GAME_PHASES: GamePhase[] = ['ROLES', 'CLUES', 'VOTING', 'LAST_GUESS', 'RESOLUTION'];
+
 export default function App() {
   // PWA Service Worker Registration
   useEffect(() => {
@@ -86,14 +92,17 @@ export default function App() {
     saveGameConfig(newConfig);
   };
 
-  // Keep gameState.phase in sync with currentPhase. Most phase transitions
-  // (RoleReveal -> CLUES, the Home button, etc.) only call setCurrentPhase
-  // and never touch gameState -- without this, gameState.phase drifts stale,
-  // so "Reanudar Partida" (which reads gameState.phase) jumps back to
-  // wherever gameState was last explicitly set instead of where the player
-  // actually left off.
+  // Keep gameState.phase in sync with currentPhase, but only for in-game
+  // phases. Most transitions (RoleReveal -> CLUES, the Home button, etc.)
+  // only call setCurrentPhase and never touch gameState -- without this,
+  // gameState.phase drifts stale, so "Reanudar Partida" (which reads
+  // gameState.phase) jumps back to wherever gameState was last explicitly
+  // set instead of where the player actually left off. Restricting this to
+  // IN_GAME_PHASES matters just as much: syncing on every phase, including
+  // HOME, meant leaving to the Home screen overwrote the resume point with
+  // 'HOME' itself, making "Reanudar Partida" a no-op.
   useEffect(() => {
-    if (gameState && gameState.phase !== currentPhase) {
+    if (gameState && IN_GAME_PHASES.includes(currentPhase) && gameState.phase !== currentPhase) {
       setGameState({ ...gameState, phase: currentPhase });
     }
   }, [currentPhase]);
@@ -170,6 +179,16 @@ export default function App() {
     }
     numImpostors = Math.min(numImpostors, Math.floor((setupPlayers.length - 1) / 2) || 1);
 
+    // 'single' (accuse everyone at once) only differs from 'successive' with
+    // 2+ impostors. RulesSettings already disables picking it with 1, but a
+    // config saved before that guard existed -- or Auto dropping to 1 after
+    // the setting was chosen -- could still carry a stale 'single' value in
+    // here, so enforce it at the one place a round actually starts too.
+    const roundConfig: GameConfig =
+      numImpostors < 2 && config.eliminationMode === 'single'
+        ? { ...config, eliminationMode: 'successive' }
+        : config;
+
     // Randomly assign Impostor IDs
     const shuffledPlayerIds = shuffle<string>(setupPlayers.map(p => p.id));
     const impostorIds = shuffledPlayerIds.slice(0, numImpostors);
@@ -197,7 +216,7 @@ export default function App() {
     const newGameState: GameState = {
       id: `game-${Date.now()}`,
       phase: 'ROLES',
-      config,
+      config: roundConfig,
       players: updatedPlayers,
       secretWord: randomWordItem,
       categoryName: targetCat.name,
@@ -428,6 +447,7 @@ export default function App() {
             onLoadGroup={handleLoadGroup}
             onDeleteGroup={handleDeleteGroup}
             vibrationEnabled={config.vibrationEnabled}
+            onBackToHome={() => setCurrentPhase('HOME')}
           />
         )}
 
@@ -437,6 +457,7 @@ export default function App() {
             config={config}
             onUpdateConfig={handleUpdateConfig}
             playerCount={setupPlayers.length}
+            onBackToHome={() => setCurrentPhase('HOME')}
           />
         )}
 
@@ -449,6 +470,7 @@ export default function App() {
             onSaveCustomCategory={handleSaveCategory}
             onDeleteCustomCategory={handleDeleteCategory}
             vibrationEnabled={config.vibrationEnabled}
+            onBackToHome={() => setCurrentPhase('HOME')}
           />
         )}
 

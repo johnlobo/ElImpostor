@@ -7,7 +7,7 @@ export const es = {
   pwaInstall: "Instalar App",
   
   // Home
-  quickStart: "Partida Rápida",
+  quickStart: "Comenzar Nueva Partida",
   setupPlayers: "Jugadores",
   configureRules: "Reglas",
   selectCategories: "Categorías",
@@ -53,6 +53,7 @@ export const es = {
   eliminationSuccessiveDesc: "Cada ronda se vota y elimina a un jugador. Si sigue habiendo impostores vivos, se repite hasta atraparlos a todos.",
   eliminationSingle: "Todos a la Vez 🎯",
   eliminationSingleDesc: "Un solo intento: hay que señalar exactamente a todos los impostores a la vez. Acertar todos gana la tripulación; fallar aunque sea por uno gana el impostor. Fuerza votación verbal.",
+  eliminationModeDisabledSingle: "Solo aplica con 2 o más impostores. Con 1 impostor la partida siempre juega en modo Uno a Uno.",
   accuseTitle: "Acusación Final",
   accuseInstructions: "Discutid en voz alta y marcad exactamente a {count} sospechoso(s): los que creáis que son los impostores.",
   accuseSelectedCount: "{selected} de {count} seleccionados",
