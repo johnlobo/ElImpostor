@@ -1,6 +1,7 @@
 export const es = {
   appName: "El Impostor",
   tagline: "El juego de mesa local-first para un solo dispositivo",
+  headerTagline: "Descubre al impostor",
   offlineBadge: "Modo Offline",
   pwaInstall: "Instalar App",
   

@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <h1 className="font-extrabold text-lg text-amber-400 tracking-tight leading-none">
                   {es.appName}
                 </h1>
-                <p className="text-[10px] text-slate-400 font-medium">Local-First PWA</p>
+                <p className="text-[10px] text-slate-400 font-medium">{es.headerTagline}</p>
               </div>
             </div>
           )}
