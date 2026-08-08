@@ -1,0 +1,211 @@
+import { Category } from '../types';
+
+export const DEFAULT_CATEGORIES: Category[] = [
+  {
+    id: 'comida',
+    name: 'Comida y Gastronomía',
+    icon: '🍕',
+    description: 'Platos, postres, bebidas y delicias culinarias del mundo.',
+    words: [
+      { word: 'Pizza', hint: 'Plato italiano con queso y tomate' },
+      { word: 'Sushi', hint: 'Comida japonesa con arroz y pescado' },
+      { word: 'Paella', hint: 'Arroz español con mariscos o carne' },
+      { word: 'Tacos', hint: 'Tortilla mexicana con guisado' },
+      { word: 'Hamburguesa', hint: 'Sándwich de carne picada a la parrilla' },
+      { word: 'Helado', hint: 'Postre frío y cremoso' },
+      { word: 'Chocolate', hint: 'Dulce derivado del cacao' },
+      { word: 'Café', hint: 'Bebida estimulante caliente o fría' },
+      { word: 'Croquetas', hint: 'Porción de masa con bechamel empanada' },
+      { word: 'Churros', hint: 'Masa frita servida con azúcar o chocolate' },
+      { word: 'Guacamole', hint: 'Salsa frita a base de aguacate' },
+      { word: 'Gazpacho', hint: 'Sopa fría de tomate y verduras' },
+      { word: 'Lasaña', hint: 'Láminas de pasta intercaladas con carne' },
+      { word: 'Risotto', hint: 'Plato italiano de arroz cremoso' },
+      { word: 'Tortilla de patatas', hint: 'Plato tradicional de huevo y patata' }
+    ]
+  },
+  {
+    id: 'cine',
+    name: 'Cine, Series y TV',
+    icon: '🍿',
+    description: 'Películas famosas, sagas épicas y series populares.',
+    words: [
+      { word: 'Harry Potter', hint: 'Joven mago con una cicatriz' },
+      { word: 'Star Wars', hint: 'Saga espacial con espadas de luz' },
+      { word: 'Titanic', hint: 'Barco gigante que choca con un iceberg' },
+      { word: 'Avatar', hint: 'Seres azules en el planeta Pandora' },
+      { word: 'Batman', hint: 'El caballero oscuro de Gotham' },
+      { word: 'El Señor de los Anillos', hint: 'Un viaje para destruir un anillo único' },
+      { word: 'Los Vengadores', hint: 'Grupo de superhéroes de Marvel' },
+      { word: 'Stranger Things', hint: 'Misterios de los 80 en el pueblo de Hawkins' },
+      { word: 'Matrix', hint: 'Mundo virtual dominado por máquinas' },
+      { word: 'Jurassic Park', hint: 'Parque de atracciones con dinosaurios' },
+      { word: 'Coco', hint: 'Aventura en el mundo de los muertos en México' },
+      { word: 'Shrek', hint: 'Ogro verde con un asno parlante' },
+      { word: 'Inception', hint: 'Infiltración en los sueños humanos' },
+      { word: 'La Casa de Papel', hint: 'Atraco con máscaras de Dalí' },
+      { word: 'Breaking Bad', hint: 'Profesor de química que fabrica sustancias' }
+    ]
+  },
+  {
+    id: 'animales',
+    name: 'Reino Animal',
+    icon: '🦁',
+    description: 'Animales salvajes, domésticos, marinos y exóticos.',
+    words: [
+      { word: 'León', hint: 'El rey de la selva' },
+      { word: 'Elefante', hint: 'Mamífero terrestre gigante con trompa' },
+      { word: 'Delfín', hint: 'Mamífero marino inteligente' },
+      { word: 'Águila', hint: 'Ave rapaz de gran visión' },
+      { word: 'Pingüino', hint: 'Ave marina que no vuela y vive en el hielo' },
+      { word: 'Canguro', hint: 'Marsupial saltarín con bolsa' },
+      { word: 'Panda', hint: 'Oso blanco y negro que come bambú' },
+      { word: 'Tiburón', hint: 'Depredador acuático con aleta dorsal' },
+      { word: 'Jirafa', hint: 'Animal con el cuello muy largo' },
+      { word: 'Camaleón', hint: 'Reptil que cambia de color' },
+      { word: 'Búho', hint: 'Ave nocturna que gira la cabeza' },
+      { word: 'Pulpo', hint: 'Molusco con ocho tentáculos' },
+      { word: 'Gorila', hint: 'Gran primate de los bosques' },
+      { word: 'Flamenco', hint: 'Ave rosada de patas largas' },
+      { word: 'Koala', hint: 'Marsupial australiano que duerme en eucaliptos' }
+    ]
+  },
+  {
+    id: 'lugares',
+    name: 'Ciudades y Países',
+    icon: '🗺️',
+    description: 'Destinos turísticos, monumentos y países del mundo.',
+    words: [
+      { word: 'España', hint: 'País del sur de Europa' },
+      { word: 'Japón', hint: 'País insular asiático del sol naciente' },
+      { word: 'Italia', hint: 'País europeo con forma de bota' },
+      { word: 'México', hint: 'País de las pirámides mayas y los mariachis' },
+      { word: 'Francia', hint: 'País de la Torre Eiffel' },
+      { word: 'Egipto', hint: 'Tierra de faraones y grandes pirámides' },
+      { word: 'Brasil', hint: 'País del Amazonas y el carnaval' },
+      { word: 'Australia', hint: 'Continente e isla de los canguros' },
+      { word: 'Nueva York', hint: 'La gran manzana y Times Square' },
+      { word: 'París', hint: 'La ciudad del amor y de la luz' },
+      { word: 'Tokio', hint: 'Capital futurista y llena de luces neon' },
+      { word: 'Roma', hint: 'La ciudad eterna con el Coliseo' },
+      { word: 'Londres', hint: 'Capital junto al Támesis con el Big Ben' },
+      { word: 'Barcelona', hint: 'Ciudad mediterránea con la Sagrada Familia' },
+      { word: 'Venecia', hint: 'Ciudad de canales y góndolas' }
+    ]
+  },
+  {
+    id: 'profesiones',
+    name: 'Profesiones y Oficios',
+    icon: '👩‍⚕️',
+    description: 'Trabajos, profesiones y especialidades del día a día.',
+    words: [
+      { word: 'Médico', hint: 'Especialista en curar enfermedades' },
+      { word: 'Bombero', hint: 'Apaga incendios y realiza rescates' },
+      { word: 'Astronauta', hint: 'Viaja al espacio en cohete' },
+      { word: 'Chef', hint: 'Cocinero profesional al mando de la cocina' },
+      { word: 'Piloto', hint: 'Conduce aviones de pasajeros o carga' },
+      { word: 'Detective', hint: 'Investiga crímenes y busca pistas' },
+      { word: 'Arqueólogo', hint: 'Descubre ruinas e historias antiguas' },
+      { word: 'Mago', hint: 'Realiza trucos e ilusiones' },
+      { word: 'Fotógrafo', hint: 'Captura imágenes con una cámara' },
+      { word: 'Juez', hint: 'Imparte justicia en los tribunales' },
+      { word: 'Programador', hint: 'Escribe código informático para apps' },
+      { word: 'Arquitecto', hint: 'Diseña planos de edificios y casas' },
+      { word: 'Pintor', hint: 'Crea obras de arte en lienzo' },
+      { word: 'Veterinario', hint: 'Médico especialista en animales' },
+      { word: 'Electricista', hint: 'Instala y repara circuitos eléctricos' }
+    ]
+  },
+  {
+    id: 'deportes',
+    name: 'Deportes y Juegos',
+    icon: '⚽',
+    description: 'Disciplinas deportivas, olimpíadas y juegos competitivos.',
+    words: [
+      { word: 'Fútbol', hint: 'Deporte de 11 contra 11 con balón' },
+      { word: 'Baloncesto', hint: 'Encestar el balón en la canasta' },
+      { word: 'Tenis', hint: 'Golpear la pelota con raqueta por encima de la red' },
+      { word: 'Natación', hint: 'Desplazamiento en el agua por brazadas' },
+      { word: 'Ajedrez', hint: 'Juego de mesa estratégico con rey y reina' },
+      { word: 'Boxeo', hint: 'Combate en cuadrilátero con guantes' },
+      { word: 'Surf', hint: 'Deslizarse sobre las olas con una tabla' },
+      { word: 'Esquí', hint: 'Deslizarse por la nieve con bastones' },
+      { word: 'Escalada', hint: 'Ascender por paredes de roca o roco' },
+      { word: 'Ciclismo', hint: 'Recorrer distancias en bicicleta' },
+      { word: 'Karate', hint: 'Arte marcial oriental con cinturones' },
+      { word: 'Golf', hint: 'Meter la bola en el hoyo con palos' },
+      { word: 'Pádel', hint: 'Deporte de pala en pista cerrada con cristal' },
+      { word: 'Bádminton', hint: 'Golpear el volante con una raqueta ligera' },
+      { word: 'Voleibol', hint: 'Pasar el balón con las manos sobre una red alta' }
+    ]
+  },
+  {
+    id: 'objetos',
+    name: 'Objetos Cotidianos',
+    icon: '🎒',
+    description: 'Cosas que usamos a diario en casa, trabajo o escuela.',
+    words: [
+      { word: 'Teléfono', hint: 'Dispositivo para llamar y usar apps' },
+      { word: 'Reloj', hint: 'Mide las horas y minutos' },
+      { word: 'Paraguas', hint: 'Protege de la lluvia cuando se abre' },
+      { word: 'Espejo', hint: 'Refleja tu imagen' },
+      { word: 'Cepillo de dientes', hint: 'Limpia la dentadura con pasta' },
+      { word: 'Mochila', hint: 'Bolsa para llevar cosas a la espalda' },
+      { word: 'Auriculares', hint: 'Para escuchar música de forma privada' },
+      { word: 'Silla', hint: 'Mueble concebido para sentarse' },
+      { word: 'Gafas de sol', hint: 'Protegen los ojos del sol' },
+      { word: 'Taza', hint: 'Recipiente para tomar café o té' },
+      { word: 'Llaves', hint: 'Sirven para abrir cerraduras' },
+      { word: 'Linterna', hint: 'Aparato portátil que emite luz' },
+      { word: 'Tijeras', hint: 'Herramienta para cortar papel o tela' },
+      { word: 'Cuaderno', hint: 'Hojas de papel encuadernadas para escribir' },
+      { word: 'Almohada', hint: 'Cojín mullido para apoyar la cabeza en la cama' }
+    ]
+  },
+  {
+    id: 'personajes',
+    name: 'Personajes Famosos',
+    icon: '👑',
+    description: 'Figuras históricas, héroes y celebridades mundiales.',
+    words: [
+      { word: 'Cleopatra', hint: 'Reina del antiguo Egipto' },
+      { word: 'Albert Einstein', hint: 'Físico que formuló la Teoría de la Relatividad' },
+      { word: 'Sherlock Holmes', hint: 'Famoso detective victoriano con pipa' },
+      { word: 'Picasso', hint: 'Pintor español del cubismo' },
+      { word: 'Mozart', hint: 'Genio de la música clásica' },
+      { word: 'Lionel Messi', hint: 'Astro del fútbol mundial' },
+      { word: 'Marie Curie', hint: 'Científica pionera en la radiactividad' },
+      { word: 'Leonardo da Vinci', hint: 'Pintor de la Gioconda y polímata' },
+      { word: 'Mario Bros', hint: 'Fontanero italiano de Nintendo' },
+      { word: 'Pikachu', hint: 'Pokémon eléctrico amarillo' },
+      { word: 'Cristóbal Colón', hint: 'Navegante que llegó a América en 1492' },
+      { word: 'Frida Kahlo', hint: 'Pintora mexicana famosa por sus autorretratos' },
+      { word: 'Drácula', hint: 'Conde vampiro de Transilvania' },
+      { word: 'Robin Hood', hint: 'Héroe que robaba a los ricos para darle a los pobres' },
+      { word: 'Spiderman', hint: 'Héroe neoyorquino picado por una araña' }
+    ]
+  },
+  {
+    id: 'videojuegos',
+    name: 'Videojuegos y Tecnología',
+    icon: '🎮',
+    description: 'Consolas, juegos legendarios y gadgets modernos.',
+    words: [
+      { word: 'Minecraft', hint: 'Juego de bloques y construcción' },
+      { word: 'Pokémon', hint: 'Capturar criaturas en Pokéballs' },
+      { word: 'Fortnite', hint: 'Battle Royale con construcciones y bailes' },
+      { word: 'Tetris', hint: 'Encajar piezas geométricas cayendo' },
+      { word: 'Zelda', hint: 'Aventura de Link en el reino de Hyrule' },
+      { word: 'Super Mario', hint: 'Fontanero saltando sobre setas para salvar a la princesa' },
+      { word: 'PlayStation', hint: 'Famosa consola de Sony' },
+      { word: 'Robot', hint: 'Máquina autoprogramable' },
+      { word: 'Dron', hint: 'Vehículo aéreo volador a control remoto' },
+      { word: 'Internet', hint: 'Red global de comunicación' },
+      { word: 'Realidad Virtual', hint: 'Gafas para sumergirse en mundos 3D' },
+      { word: 'Inteligencia Artificial', hint: 'Sistemas que simulan el aprendizaje humano' },
+      { word: 'Smartphone', hint: 'Teléfono inteligente táctil' },
+      { word: 'Satélite', hint: 'Objeto en órbita alrededor de la Tierra' },
+      { word: 'Consola', hint: 'Aparato dedicado para jugar a videojuegos' }
+    ]
+  }
+];

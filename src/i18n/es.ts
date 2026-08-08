@@ -1,0 +1,118 @@
+export const es = {
+  appName: "El Impostor",
+  tagline: "El juego de mesa local-first para un solo dispositivo",
+  offlineBadge: "Modo Offline",
+  pwaInstall: "Instalar App",
+  
+  // Home
+  quickStart: "Partida Rápida",
+  setupPlayers: "Jugadores",
+  configureRules: "Reglas",
+  selectCategories: "Categorías",
+  leaderboard: "Puntuaciones",
+  groupsManager: "Grupos Guardados",
+  history: "Historial de Partidas",
+
+  // Setup Players
+  playerSetupTitle: "Jugadores y Grupos",
+  playersCount: "Jugadores ({count})",
+  addPlayer: "Añadir Jugador",
+  playerNamePlaceholder: "Nombre del jugador",
+  minPlayersNotice: "Mínimo 3 jugadores para comenzar",
+  maxPlayersNotice: "Máximo 20 jugadores alcanzado",
+  loadGroup: "Cargar Grupo",
+  saveGroup: "Guardar como Grupo",
+  groupNamePlaceholder: "Ej. Amigos Viernes",
+
+  // Rules
+  rulesTitle: "Configuración de Reglas",
+  impostorCount: "Número de Impostores",
+  dynamicImpostors: "Automático (según número de jugadores)",
+  knowledgeMode: "Pistas para el Impostor",
+  knowledgeNone: "Sin pistas (no sabe nada)",
+  knowledgeCategory: "Sabe la categoría secreta",
+  knowledgeFakeWord: "Recibe una palabra parecida (falsa)",
+  clueOrder: "Orden de Pistas",
+  orderFree: "Conversación Libre",
+  orderTurns: "Por turnos individuales",
+  orderTimer: "Con temporizador",
+  timerSeconds: "Tiempo por turno",
+  secondsFormat: "{s} segundos",
+  votingMode: "Modo de Votación",
+  votingVerbal: "Votación Verbal (En voz alta)",
+  votingSecret: "Votación Secreta (Pasando el teléfono)",
+  impostorLastGuess: "Último Intento del Impostor",
+  impostorLastGuessHelp: "Si el impostor es descubierto, puede intentar adivinar la palabra secreta para ganar.",
+  audioSettings: "Efectos de Sonido",
+  hapticSettings: "Vibración al Tocar",
+
+  // Categories
+  categoriesTitle: "Categorías de Palabras",
+  allRandom: "Mezcla Aleatoria de Todas",
+  createCategory: "Crear Categoría Personalizada",
+  editCategory: "Editar Categoría",
+  wordsCount: "{count} palabras",
+  addWord: "Añadir Palabra",
+  wordPlaceholder: "Ej. Pizza, Coliseo, Dentista...",
+
+  // Role Reveal (Pass the phone)
+  roleRevealTitle: "Asignación Secreta de Roles",
+  passPhoneTo: "Pasa el teléfono a",
+  pressAndHoldToSee: "Mantén presionado para ver tu rol",
+  releaseToHide: "Suelta la pantalla para ocultar inmediatamente",
+  yourRoleIs: "Tu rol es:",
+  crewmateRole: "TRIPULANTE",
+  impostorRole: "IMPOSTOR 🕵️‍♂️",
+  secretWordIs: "Palabra Secreta:",
+  categoryIs: "Categoría:",
+  fakeWordIs: "Tu Palabra Falsa:",
+  impostorHint: "Debes disimular y descubrir la palabra escuchando a los demás.",
+  crewmateHint: "Da una pista sutil sobre la palabra sin revelarla al impostor.",
+  nextPlayer: "Entendido, Pasar el Teléfono",
+  allRolesRevealed: "¡Todos han visto su rol!",
+  startCluesPhase: "Comenzar Fase de Pistas",
+
+  // Clue Phase
+  cluePhaseTitle: "Fase de Pistas",
+  turnOf: "Turno de {name}",
+  giveClueInstruction: "Di una palabra o pista breve sobre el concepto secreto.",
+  timeRemaining: "Tiempo restante",
+  nextTurn: "Siguiente Turno",
+  finishClues: "Finalizar Pistas e Ir a Votar",
+
+  // Voting Phase
+  votingTitle: "Fase de Votación",
+  verbalVotingInstructions: "Discutid en grupo y elegid a quién eliminar de la partida.",
+  secretVotingTitle: "Votación Secreta",
+  passPhoneToVote: "Pasa el teléfono a {name} para emitir su voto",
+  selectSuspect: "¿Quién crees que es el Impostor?",
+  confirmVote: "Confirmar Voto Secreto",
+  voteTallyTitle: "Resultados de la Votación",
+  tieNotice: "¡Hay un empate! Realizad un desempate o segunda votación.",
+
+  // Last Guess Phase
+  lastGuessTitle: "¡Último Intento del Impostor!",
+  lastGuessInstructions: "{name} ha sido votado como Impostor. ¡Tiene una última oportunidad para robar la victoria!",
+  guessTheWord: "¿Cuál crees que era la Palabra Secreta?",
+  submitGuess: "Verificar Respuesta",
+
+  // Resolution
+  resolutionTitle: "Resolución de la Ronda",
+  crewmateVictory: "¡VICTORIA DE LOS TRIPULANTES! 🏆",
+  impostorVictory: "¡VICTORIA DEL IMPOSTOR! 🕵️‍♂️",
+  revealedWord: "La palabra secreta era: {word}",
+  impostorsWere: "Los impostores eran: {names}",
+  playAgain: "Siguiente Ronda",
+  viewLeaderboard: "Ver Marcador",
+  newMatch: "Nueva Partida",
+
+  // Common
+  back: "Volver",
+  cancel: "Cancelar",
+  save: "Guardar",
+  delete: "Eliminar",
+  edit: "Editar",
+  start: "Empezar",
+  continue: "Continuar",
+  resetScores: "Reiniciar Puntuaciones"
+};

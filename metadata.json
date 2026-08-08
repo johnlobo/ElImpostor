@@ -1,0 +1,6 @@
+{
+  "name": "El Impostor - Juego de Mesa Local",
+  "description": "Juego del Impostor local-first para jugar offline en un solo dispositivo compartido entre 3 y 20 jugadores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
