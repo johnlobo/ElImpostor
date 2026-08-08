@@ -86,12 +86,24 @@ export default function App() {
     saveGameConfig(newConfig);
   };
 
-  // Sync active game on change
+  // Keep gameState.phase in sync with currentPhase. Most phase transitions
+  // (RoleReveal -> CLUES, the Home button, etc.) only call setCurrentPhase
+  // and never touch gameState -- without this, gameState.phase drifts stale,
+  // so "Reanudar Partida" (which reads gameState.phase) jumps back to
+  // wherever gameState was last explicitly set instead of where the player
+  // actually left off.
+  useEffect(() => {
+    if (gameState && gameState.phase !== currentPhase) {
+      setGameState({ ...gameState, phase: currentPhase });
+    }
+  }, [currentPhase]);
+
+  // Persist to localStorage whenever the (now phase-synced) game state changes.
   useEffect(() => {
     if (gameState) {
-      saveActiveGame({ ...gameState, phase: currentPhase });
+      saveActiveGame(gameState);
     }
-  }, [gameState, currentPhase]);
+  }, [gameState]);
 
   // Categories Handlers
   const handleSaveCategory = (cat: Category) => {
