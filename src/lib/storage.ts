@@ -112,12 +112,39 @@ export function saveGameConfig(config: GameConfig): void {
   setItem(KEYS.CONFIG, config);
 }
 
+// The active game round-trips through localStorage in plain JSON by default,
+// which means anyone can open devtools' Application tab mid-round and read
+// the secret word / impostor identities before they're revealed in-app.
+// Sealing keeps those fields out of the stored JSON as readable text.
+type SealedFields = Pick<GameState, 'secretWord' | 'impostorIds' | 'fakeWord'>;
+type SealedActiveGame = Omit<GameState, keyof SealedFields> & { _sealed: string };
+
+function seal(fields: SealedFields): string {
+  return btoa(encodeURIComponent(JSON.stringify(fields)));
+}
+
+function unseal(sealed: string): SealedFields {
+  return JSON.parse(decodeURIComponent(atob(sealed)));
+}
+
 export function loadActiveGame(): GameState | null {
-  return getItem<GameState | null>(KEYS.ACTIVE_GAME, null);
+  const stored = getItem<SealedActiveGame | null>(KEYS.ACTIVE_GAME, null);
+  if (!stored) return null;
+  const { _sealed, ...rest } = stored;
+  return { ...rest, ...unseal(_sealed) } as GameState;
 }
 
 export function saveActiveGame(state: GameState | null): void {
-  setItem(KEYS.ACTIVE_GAME, state);
+  if (!state) {
+    setItem(KEYS.ACTIVE_GAME, null);
+    return;
+  }
+  const { secretWord, impostorIds, fakeWord, ...rest } = state;
+  const sealed: SealedActiveGame = {
+    ...rest,
+    _sealed: seal({ secretWord, impostorIds, fakeWord })
+  };
+  setItem(KEYS.ACTIVE_GAME, sealed);
 }
 
 export function clearActiveGame(): void {

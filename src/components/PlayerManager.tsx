@@ -25,14 +25,22 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
   vibrationEnabled
 }) => {
   const [newName, setNewName] = useState('');
+  const [nameError, setNameError] = useState(false);
   const [showSaveGroupModal, setShowSaveGroupModal] = useState(false);
   const [groupNameInput, setGroupNameInput] = useState('');
+
+  const isDuplicateName = (name: string, excludeId?: string): boolean =>
+    players.some(p => p.id !== excludeId && p.name.trim().toLowerCase() === name.trim().toLowerCase());
 
   const handleAddPlayer = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const trimmed = newName.trim();
     if (!trimmed) return;
     if (players.length >= 20) return;
+    if (isDuplicateName(trimmed)) {
+      setNameError(true);
+      return;
+    }
 
     triggerHaptic(30, vibrationEnabled);
     const randomAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
@@ -49,6 +57,7 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
 
     onUpdatePlayers([...players, newPlayer]);
     setNewName('');
+    setNameError(false);
   };
 
   const handleRemovePlayer = (id: string) => {
@@ -148,10 +157,15 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
           <input
             type="text"
             value={newName}
-            onChange={(e) => setNewName(e.target.value)}
+            onChange={(e) => {
+              setNewName(e.target.value);
+              setNameError(false);
+            }}
             placeholder={es.playerNamePlaceholder}
             maxLength={18}
-            className="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-all"
+            className={`flex-1 bg-slate-900 border rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none transition-all ${
+              nameError ? 'border-rose-500' : 'border-slate-800 focus:border-amber-500'
+            }`}
           />
           <button
             type="submit"
@@ -162,6 +176,9 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
             <Plus className="w-5 h-5" />
           </button>
         </div>
+        {nameError && (
+          <p className="text-[11px] text-rose-400 font-medium px-1">{es.duplicateNameNotice}</p>
+        )}
       </form>
 
       {/* Players List */}
@@ -193,8 +210,11 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
                     const name = e.target.value;
                     onUpdatePlayers(players.map(x => x.id === p.id ? { ...x, name } : x));
                   }}
-                  className="bg-transparent font-bold text-slate-100 text-sm focus:outline-none border-b border-transparent focus:border-amber-400 w-full truncate"
+                  className={`bg-transparent font-bold text-slate-100 text-sm focus:outline-none border-b w-full truncate ${
+                    isDuplicateName(p.name, p.id) ? 'border-rose-500' : 'border-transparent focus:border-amber-400'
+                  }`}
                   maxLength={18}
+                  title={isDuplicateName(p.name, p.id) ? es.duplicateNameNotice : undefined}
                 />
                 <button
                   onClick={() => handleCycleColor(p.id)}

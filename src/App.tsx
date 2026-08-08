@@ -41,6 +41,7 @@ import { ResolutionPhase } from './components/ResolutionPhase';
 import { Scoreboard } from './components/Scoreboard';
 import { PwaInstallModal } from './components/PwaInstallModal';
 import { audioManager } from './lib/audio';
+import { shuffle } from './lib/random';
 import { es } from './i18n/es';
 
 export default function App() {
@@ -158,7 +159,7 @@ export default function App() {
     numImpostors = Math.min(numImpostors, Math.floor((setupPlayers.length - 1) / 2) || 1);
 
     // Randomly assign Impostor IDs
-    const shuffledPlayerIds = [...setupPlayers].map(p => p.id).sort(() => 0.5 - Math.random());
+    const shuffledPlayerIds = shuffle<string>(setupPlayers.map(p => p.id));
     const impostorIds = shuffledPlayerIds.slice(0, numImpostors);
 
     // Pick fake word if knowledge mode is fake_word
@@ -212,9 +213,25 @@ export default function App() {
     );
 
     if (isImpostor) {
-      // Impostor was voted off!
-      if (gameState.config.impostorCanGuess) {
-        // Go to Last Guess Phase!
+      // Impostor was voted off! With 2-3 impostors, catching one doesn't
+      // end the match on its own -- the rest are still hidden among crew.
+      const impostorsStillAlive = gameState.impostorIds.some(
+        id => id !== eliminatedId && updatedPlayers.find(p => p.id === id)?.isAlive
+      );
+
+      if (impostorsStillAlive) {
+        // Round continues: back to clues so the group can keep hunting.
+        setGameState({
+          ...gameState,
+          players: updatedPlayers,
+          eliminatedPlayerId: undefined,
+          votes: {},
+          roundNotice: es.impostorCaughtMoreRemain,
+          phase: 'CLUES'
+        });
+        setCurrentPhase('CLUES');
+      } else if (gameState.config.impostorCanGuess) {
+        // Last impostor caught -- give them a chance to guess the word.
         setGameState({
           ...gameState,
           players: updatedPlayers,
@@ -224,7 +241,7 @@ export default function App() {
         });
         setCurrentPhase('LAST_GUESS');
       } else {
-        // Crewmate Victory immediately
+        // Last impostor caught, no guess allowed: Crewmate Victory.
         finishMatch('CREW', '¡Los tripulantes descubrieron al impostor!', updatedPlayers, eliminatedId);
       }
     } else {
@@ -298,7 +315,7 @@ export default function App() {
       };
     });
 
-    // Update Global Leaderboard in IndexedDB
+    // Update Global Leaderboard in localStorage
     const updatedLeaderboard = updateLeaderboard(leaderboardUpdates);
     setGlobalLeaderboard(updatedLeaderboard);
 
@@ -418,7 +435,10 @@ export default function App() {
         {currentPhase === 'CLUES' && gameState && (
           <CluePhase
             gameState={gameState}
-            onFinishClues={() => setCurrentPhase('VOTING')}
+            onFinishClues={() => {
+              setGameState({ ...gameState, roundNotice: undefined });
+              setCurrentPhase('VOTING');
+            }}
           />
         )}
 

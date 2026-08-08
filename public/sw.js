@@ -1,11 +1,13 @@
-const CACHE_NAME = 'impostor-pwa-v1';
+const CACHE_NAME = 'impostor-pwa-v2';
+// Only paths guaranteed to exist in the production build (dev-only source
+// paths like /src/main.tsx made cache.addAll reject entirely -- it's
+// all-or-nothing -- so nothing was ever precached, dev or prod).
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/src/main.tsx',
-  '/src/index.css',
-  '/src/App.tsx'
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {

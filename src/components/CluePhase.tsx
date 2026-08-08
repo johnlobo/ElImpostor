@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Clock, Play, Pause, RotateCcw, ArrowRight, MessageSquare, AlertCircle } from 'lucide-react';
 import { GameState, Player } from '../types';
 import { es } from '../i18n/es';
@@ -15,23 +15,22 @@ export const CluePhase: React.FC<CluePhaseProps> = ({ gameState, onFinishClues }
   const [timeLeft, setTimeLeft] = useState(gameState.config.turnTimerSeconds || 45);
   const [isTimerRunning, setIsTimerRunning] = useState(gameState.config.clueOrder === 'timer');
 
+  // Guards against the manual "next turn" click and the timer's auto-advance
+  // firing within the same tick, which would otherwise skip a player's turn.
+  const isAdvancingRef = useRef(false);
+
   const totalPlayers = gameState.players.length;
   const currentTurnPlayer: Player = gameState.players[activeTurnIndex % totalPlayers];
 
-  // Turn Timer effect
+  // Ticking interval: created once per run (start/pause), not recreated
+  // every second, so it doesn't depend on timeLeft.
   useEffect(() => {
     if (gameState.config.clueOrder !== 'timer' || !isTimerRunning) return;
 
-    if (timeLeft <= 0) {
-      audioManager.playBeepAlert(gameState.config.soundEnabled);
-      triggerHaptic([100, 50, 100], gameState.config.vibrationEnabled);
-      handleNextTurn();
-      return;
-    }
-
     const interval = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 5 && prev > 1) {
+        if (prev <= 1) return 0;
+        if (prev <= 5) {
           audioManager.playTick(gameState.config.soundEnabled);
           triggerHaptic(30, gameState.config.vibrationEnabled);
         }
@@ -40,9 +39,23 @@ export const CluePhase: React.FC<CluePhaseProps> = ({ gameState, onFinishClues }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isTimerRunning, timeLeft, gameState.config]);
+  }, [isTimerRunning, gameState.config.clueOrder, gameState.config.soundEnabled, gameState.config.vibrationEnabled]);
+
+  // Reacts once the ticking interval above brings timeLeft to 0.
+  useEffect(() => {
+    if (gameState.config.clueOrder !== 'timer' || !isTimerRunning) return;
+    if (timeLeft !== 0) return;
+
+    audioManager.playBeepAlert(gameState.config.soundEnabled);
+    triggerHaptic([100, 50, 100], gameState.config.vibrationEnabled);
+    handleNextTurn();
+  }, [timeLeft]);
 
   const handleNextTurn = () => {
+    if (isAdvancingRef.current) return;
+    isAdvancingRef.current = true;
+    setTimeout(() => { isAdvancingRef.current = false; }, 0);
+
     triggerHaptic(30, gameState.config.vibrationEnabled);
     setActiveTurnIndex(prev => prev + 1);
     setTimeLeft(gameState.config.turnTimerSeconds || 45);
@@ -61,6 +74,13 @@ export const CluePhase: React.FC<CluePhaseProps> = ({ gameState, onFinishClues }
 
   return (
     <div className="space-y-6 max-w-sm mx-auto animate-fade-in py-2">
+      {/* Round continues: an impostor was caught but more remain */}
+      {gameState.roundNotice && (
+        <div className="p-3.5 bg-emerald-950/50 border border-emerald-800/70 rounded-2xl text-emerald-300 text-xs font-medium text-center">
+          {gameState.roundNotice}
+        </div>
+      )}
+
       {/* Category Reminder Banner */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">

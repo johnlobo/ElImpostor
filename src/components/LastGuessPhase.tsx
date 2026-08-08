@@ -3,6 +3,7 @@ import { HelpCircle, CheckCircle2, Sparkles, AlertTriangle } from 'lucide-react'
 import { GameState, Player, WordItem } from '../types';
 import { es } from '../i18n/es';
 import { triggerHaptic } from '../lib/haptics';
+import { shuffle } from '../lib/random';
 
 interface LastGuessPhaseProps {
   gameState: GameState;
@@ -26,17 +27,16 @@ export const LastGuessPhase: React.FC<LastGuessPhaseProps> = ({
     const realWord = gameState.secretWord.word;
     const choices = new Set<string>([realWord]);
 
-    const shuffledCategoryWords = [...categoryWords]
-      .map(w => w.word)
-      .filter(w => w !== realWord)
-      .sort(() => 0.5 - Math.random());
+    const shuffledCategoryWords = shuffle<string>(
+      categoryWords.map(w => w.word).filter(w => w !== realWord)
+    );
 
     for (const w of shuffledCategoryWords) {
       if (choices.size >= 4) break;
       choices.add(w);
     }
 
-    return Array.from(choices).sort(() => 0.5 - Math.random());
+    return shuffle<string>(Array.from(choices));
   };
 
   const [options] = useState<string[]>(getGuessOptions());

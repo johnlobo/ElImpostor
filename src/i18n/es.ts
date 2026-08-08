@@ -20,6 +20,10 @@ export const es = {
   playerNamePlaceholder: "Nombre del jugador",
   minPlayersNotice: "Mínimo 3 jugadores para comenzar",
   maxPlayersNotice: "Máximo 20 jugadores alcanzado",
+  duplicateNameNotice: "Ya hay un jugador con ese nombre",
+
+  // Multi-impostor round continuation
+  impostorCaughtMoreRemain: "¡Atrapasteis a un impostor! Pero queda al menos uno más entre vosotros. Seguid dando pistas.",
   loadGroup: "Cargar Grupo",
   saveGroup: "Guardar como Grupo",
   groupNamePlaceholder: "Ej. Amigos Viernes",

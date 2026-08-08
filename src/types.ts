@@ -92,6 +92,7 @@ export interface GameState {
   currentTurnIndex: number;
   votes: Record<string, string>; // voterPlayerId -> targetPlayerId
   eliminatedPlayerId?: string;
+  roundNotice?: string;
   impostorGuessedWord?: string;
   impostorGuessCorrect?: boolean;
   winningTeam?: 'CREW' | 'IMPOSTOR';
