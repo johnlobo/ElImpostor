@@ -252,6 +252,21 @@ export default function App() {
     }
   };
 
+  // SINGLE-MODE RESOLUTION: one all-or-nothing accusation of N suspects.
+  const handleConfirmMultiElimination = (accusedIds: string[]) => {
+    if (!gameState) return;
+
+    const isExactMatch =
+      accusedIds.length === gameState.impostorIds.length &&
+      accusedIds.every(id => gameState.impostorIds.includes(id));
+
+    if (isExactMatch) {
+      finishMatch('CREW', es.accuseCrewWinReason, gameState.players);
+    } else {
+      finishMatch('IMPOSTOR', es.accuseImpostorWinReason, gameState.players);
+    }
+  };
+
   // LAST GUESS RESOLUTION
   const handleCompleteLastGuess = (guessedWord: string, isCorrect: boolean) => {
     if (!gameState) return;
@@ -449,6 +464,7 @@ export default function App() {
           <VotingPhase
             gameState={gameState}
             onConfirmElimination={handleConfirmElimination}
+            onConfirmMultiElimination={handleConfirmMultiElimination}
             onVoteCast={(voterIndex, votesMap) => {
               setGameState({ ...gameState, secretVoterIndex: voterIndex, votes: votesMap });
             }}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Vote, ArrowRight, ShieldAlert, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Vote, ArrowRight, ShieldAlert, CheckCircle2, RefreshCw, Target } from 'lucide-react';
 import { GameState, Player, VoteTally } from '../types';
 import { es } from '../i18n/es';
 import { audioManager } from '../lib/audio';
@@ -8,18 +8,29 @@ import { triggerHaptic } from '../lib/haptics';
 interface VotingPhaseProps {
   gameState: GameState;
   onConfirmElimination: (eliminatedPlayerId: string, votesRecord?: Record<string, string>) => void;
+  // Single-accusation mode: one all-or-nothing vote for the whole suspect set.
+  onConfirmMultiElimination: (accusedIds: string[]) => void;
   // Persists secret-ballot progress into gameState (and from there,
   // localStorage) so a reload mid-vote resumes instead of letting an
   // earlier voter vote again.
   onVoteCast: (voterIndex: number, votesMap: Record<string, string>) => void;
 }
 
-export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmElimination, onVoteCast }) => {
+export const VotingPhase: React.FC<VotingPhaseProps> = ({
+  gameState,
+  onConfirmElimination,
+  onConfirmMultiElimination,
+  onVoteCast
+}) => {
   // Verbal voting state
   const [selectedVerbalTargetId, setSelectedVerbalTargetId] = useState<string | null>(null);
 
+  // Single-accusation mode: multi-select up to impostorIds.length suspects
+  const [selectedAccusedIds, setSelectedAccusedIds] = useState<string[]>([]);
+
   const alivePlayers = gameState.players.filter(p => p.isAlive);
   const totalVoters = alivePlayers.length;
+  const accusationTarget = gameState.impostorIds.length;
 
   // Secret voting state (pass-the-phone), resumed from gameState if a
   // reload happened mid-vote instead of always starting fresh.
@@ -89,8 +100,76 @@ export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmEl
 
   return (
     <div className="space-y-6 max-w-sm mx-auto animate-fade-in py-2">
+      {/* SINGLE-ACCUSATION MODE: one all-or-nothing pick of N suspects */}
+      {gameState.config.eliminationMode === 'single' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-3xl flex items-center justify-center mx-auto text-amber-400">
+              <Target className="w-7 h-7" />
+            </div>
+            <h2 className="text-xl font-black text-white">{es.accuseTitle}</h2>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {es.accuseInstructions.replace('{count}', String(accusationTarget))}
+            </p>
+            <p className="text-xs font-bold text-amber-400">
+              {es.accuseSelectedCount
+                .replace('{selected}', String(selectedAccusedIds.length))
+                .replace('{count}', String(accusationTarget))}
+            </p>
+          </div>
+
+          <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+            {alivePlayers.map(p => {
+              const isSelected = selectedAccusedIds.includes(p.id);
+              const disabled = !isSelected && selectedAccusedIds.length >= accusationTarget;
+              return (
+                <button
+                  key={p.id}
+                  disabled={disabled}
+                  onClick={() => {
+                    triggerHaptic(20, gameState.config.vibrationEnabled);
+                    setSelectedAccusedIds(prev =>
+                      isSelected ? prev.filter(id => id !== p.id) : [...prev, p.id]
+                    );
+                  }}
+                  className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'bg-rose-500 text-slate-950 border-rose-400 font-bold shadow-lg scale-102'
+                      : disabled
+                        ? 'bg-slate-950/50 border-slate-800/50 text-slate-600 cursor-not-allowed'
+                        : 'bg-slate-950 text-slate-200 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={`w-9 h-9 rounded-xl ${p.color} flex items-center justify-center text-lg`}>
+                      {p.avatar}
+                    </span>
+                    <span className="font-extrabold text-sm">{p.name}</span>
+                  </div>
+                  {isSelected && <CheckCircle2 className="w-5 h-5 text-slate-950" />}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => {
+              if (selectedAccusedIds.length !== accusationTarget) return;
+              triggerHaptic(40, gameState.config.vibrationEnabled);
+              onConfirmMultiElimination(selectedAccusedIds);
+            }}
+            disabled={selectedAccusedIds.length !== accusationTarget}
+            id="confirm-accusation-btn"
+            className="w-full py-4 bg-rose-500 hover:bg-rose-400 disabled:opacity-40 text-slate-950 font-black rounded-2xl shadow-xl shadow-rose-500/20 transition-all flex items-center justify-center gap-2 text-base"
+          >
+            <ShieldAlert className="w-5 h-5" />
+            <span>{es.accuseConfirm}</span>
+          </button>
+        </div>
+      )}
+
       {/* VERBAL VOTING MODE */}
-      {gameState.config.votingMode === 'verbal' && (
+      {gameState.config.eliminationMode === 'successive' && gameState.config.votingMode === 'verbal' && (
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
             <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-3xl flex items-center justify-center mx-auto text-amber-400">
@@ -153,7 +232,7 @@ export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmEl
       )}
 
       {/* SECRET PASS-PHONE VOTING MODE */}
-      {gameState.config.votingMode === 'secret' && !showTallyResult && (
+      {gameState.config.eliminationMode === 'successive' && gameState.config.votingMode === 'secret' && !showTallyResult && (
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6">
           {/* Progress Header */}
           <div className="flex items-center justify-between text-xs font-bold text-slate-400 bg-slate-950 border border-slate-800 rounded-2xl px-4 py-2">
@@ -222,7 +301,7 @@ export const VotingPhase: React.FC<VotingPhaseProps> = ({ gameState, onConfirmEl
       )}
 
       {/* SECRET VOTING TALLY RESULT SCREEN */}
-      {gameState.config.votingMode === 'secret' && showTallyResult && (() => {
+      {gameState.config.eliminationMode === 'successive' && gameState.config.votingMode === 'secret' && showTallyResult && (() => {
         const { tallies, topPlayerId, isTie } = getTallies();
 
         return (

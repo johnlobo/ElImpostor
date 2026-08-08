@@ -1,6 +1,6 @@
 import React from 'react';
 import { Shield, Eye, Clock, Vote, Volume2, HelpCircle, Vibrate } from 'lucide-react';
-import { GameConfig, ImpostorKnowledge, ClueOrder, VotingMode } from '../types';
+import { GameConfig, ImpostorKnowledge, ClueOrder, VotingMode, EliminationMode } from '../types';
 import { es } from '../i18n/es';
 import { triggerHaptic } from '../lib/haptics';
 
@@ -59,6 +59,42 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
             ? `Se asignarán ${playerCount >= 8 ? 2 : 1} impostor(es) para ${playerCount} jugadores.`
             : `Se asignará(n) exactamente ${config.impostorCount} impostor(es).`}
         </p>
+      </div>
+
+      {/* Elimination Mode */}
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-3">
+        <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+          <Shield className="w-5 h-5" />
+          <h3>{es.eliminationMode}</h3>
+        </div>
+        <div className="space-y-2">
+          {[
+            { id: 'successive' as EliminationMode, title: es.eliminationSuccessive, desc: es.eliminationSuccessiveDesc },
+            { id: 'single' as EliminationMode, title: es.eliminationSingle, desc: es.eliminationSingleDesc }
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => {
+                triggerHaptic(20, config.vibrationEnabled);
+                onUpdateConfig({
+                  ...config,
+                  eliminationMode: item.id,
+                  // A secret ballot has no natural way to tally "pick N per
+                  // voter", so single-accusation mode always runs verbal.
+                  votingMode: item.id === 'single' ? 'verbal' : config.votingMode
+                });
+              }}
+              className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
+                config.eliminationMode === item.id
+                  ? 'bg-amber-500/10 border-amber-500/80 text-white'
+                  : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+              }`}
+            >
+              <div className="font-bold text-xs text-amber-300">{item.title}</div>
+              <div className="text-[11px] text-slate-400 mt-0.5">{item.desc}</div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Impostor Knowledge */}
@@ -150,21 +186,30 @@ export const RulesSettings: React.FC<RulesSettingsProps> = ({
           {[
             { id: 'secret' as VotingMode, title: 'Secreta 📱', desc: 'Pasando el móvil' },
             { id: 'verbal' as VotingMode, title: 'Verbal 🗣️', desc: 'En voz alta' }
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleSetVal('votingMode', item.id)}
-              className={`p-3.5 rounded-2xl border text-left transition-all ${
-                config.votingMode === item.id
-                  ? 'bg-amber-500/10 border-amber-500/80 text-white'
-                  : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="font-bold text-xs text-amber-300">{item.title}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">{item.desc}</div>
-            </button>
-          ))}
+          ].map((item) => {
+            const disabled = item.id === 'secret' && config.eliminationMode === 'single';
+            return (
+              <button
+                key={item.id}
+                onClick={() => !disabled && handleSetVal('votingMode', item.id)}
+                disabled={disabled}
+                className={`p-3.5 rounded-2xl border text-left transition-all ${
+                  disabled
+                    ? 'bg-slate-950/50 border-slate-800/50 text-slate-600 cursor-not-allowed'
+                    : config.votingMode === item.id
+                      ? 'bg-amber-500/10 border-amber-500/80 text-white'
+                      : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                }`}
+              >
+                <div className={`font-bold text-xs ${disabled ? 'text-slate-600' : 'text-amber-300'}`}>{item.title}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">{item.desc}</div>
+              </button>
+            );
+          })}
         </div>
+        {config.eliminationMode === 'single' && (
+          <p className="text-[11px] text-amber-300/80">{es.votingSecretDisabledForSingle}</p>
+        )}
       </div>
 
       {/* Toggles: Last Guess & Audio/Haptics */}

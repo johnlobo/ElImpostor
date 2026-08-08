@@ -35,6 +35,11 @@ export interface Category {
 export type ImpostorKnowledge = 'none' | 'category_only' | 'fake_word';
 export type ClueOrder = 'free' | 'turns' | 'timer';
 export type VotingMode = 'verbal' | 'secret';
+// 'successive': one elimination per voting round, repeats until every impostor is caught.
+// 'single': one all-or-nothing accusation of exactly N suspects (N = impostor count);
+// exact match wins for the crew, anything else is an immediate impostor win. Forces
+// verbal voting -- a secret ballot has no natural way to tally "pick N" per voter.
+export type EliminationMode = 'successive' | 'single';
 
 export interface GameConfig {
   impostorCount: number; // 1, 2, 3 or -1 for dynamic
@@ -42,6 +47,7 @@ export interface GameConfig {
   clueOrder: ClueOrder;
   turnTimerSeconds: number; // 0 = off, 30, 45, 60, 90, 120
   votingMode: VotingMode;
+  eliminationMode: EliminationMode;
   impostorCanGuess: boolean;
   soundEnabled: boolean;
   vibrationEnabled: boolean;

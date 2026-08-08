@@ -16,6 +16,7 @@ export const DEFAULT_CONFIG: GameConfig = {
   clueOrder: 'turns',
   turnTimerSeconds: 45,
   votingMode: 'secret',
+  eliminationMode: 'successive',
   impostorCanGuess: true,
   soundEnabled: true,
   vibrationEnabled: true,
@@ -105,7 +106,10 @@ export function deletePlayerGroup(groupId: string): PlayerGroup[] {
 }
 
 export function loadGameConfig(): GameConfig {
-  return getItem<GameConfig>(KEYS.CONFIG, DEFAULT_CONFIG);
+  // Merge over DEFAULT_CONFIG so a config saved by an older version of the
+  // app (missing a field added since, e.g. eliminationMode) doesn't come
+  // back with that field undefined.
+  return { ...DEFAULT_CONFIG, ...getItem<Partial<GameConfig>>(KEYS.CONFIG, DEFAULT_CONFIG) };
 }
 
 export function saveGameConfig(config: GameConfig): void {
