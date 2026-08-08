@@ -36,7 +36,7 @@ export const Home: React.FC<HomeProps> = ({
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider mb-1">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Juego de Mesa PWA</span>
+            <span>{es.gameGenreBadge}</span>
           </div>
           <h2 className="text-3xl font-black text-white tracking-tight">{es.appName}</h2>
           <p className="text-xs text-slate-300 max-w-xs mx-auto leading-relaxed">

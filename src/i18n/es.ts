@@ -2,6 +2,7 @@ export const es = {
   appName: "El Impostor",
   tagline: "El juego de mesa local-first para un solo dispositivo",
   headerTagline: "Descubre al impostor",
+  gameGenreBadge: "Juego de Deducción Social",
   offlineBadge: "Modo Offline",
   pwaInstall: "Instalar App",
   
