@@ -1,0 +1,11 @@
+services:
+  elimpostor:
+    image: ghcr.io/johnlobo/elimpostor:latest
+    container_name: elimpostor
+    restart: unless-stopped
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true
